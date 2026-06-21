@@ -1,0 +1,424 @@
+import streamlit as st
+from fpdf import FPDF
+import requests
+
+st.set_page_config(page_title="Red River Gems Land Analyzer", page_icon="🌾", layout="centered")
+
+EIA_API_KEY = "jjD5aFx44aC5JSiPDU63fG4f5By7XdHRNYsmqAM8"
+
+def get_eia_gas_price(state):
+    padd_map = {
+        "TX": "PET.EMM_EPM0_PTE_R3X_DPG.W",
+        "OK": "PET.EMM_EPM0_PTE_R3X_DPG.W",
+        "AR": "PET.EMM_EPM0_PTE_R3X_DPG.W",
+        "LA": "PET.EMM_EPM0_PTE_R3X_DPG.W",
+    }
+    
+    series_id = padd_map.get(state, "PET.EMM_EPM0_PTE_R3X_DPG.W")
+    url = f"https://api.eia.gov/series/?api_key={EIA_API_KEY}&series_id={series_id}"
+    
+    try:
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        
+        if "series" in data and len(data["series"]) > 0:
+            latest = data["series"][0]["data"][0]
+            return round(float(latest[1]), 2)
+    except:
+        pass
+    
+    fallback_prices = {"TX": 3.45, "OK": 3.35, "AR": 3.30, "LA": 3.50}
+    return fallback_prices.get(state, 3.45)
+
+
+st.title("🌾 Red River Gems Land Analyzer")
+st.markdown("Practical research reports for land and homestead buyers in **Texas, Oklahoma, Arkansas, and Louisiana**.")
+
+st.divider()
+
+st.header("Enter Property Details")
+
+col1, col2 = st.columns(2)
+with col1:
+    state = st.selectbox("State", ["TX", "OK", "AR", "LA"])
+    county_or_city = st.text_input("County or Nearest City", placeholder="e.g. Granbury")
+
+with col2:
+    acreage = st.number_input("Acreage", min_value=0.1, value=1.0, step=0.5)
+    asking_price = st.number_input("Asking Price ($)", min_value=1000, value=120000, step=1000)
+
+purpose = st.selectbox(
+    "Intended Use / Purpose",
+    ["Homestead / Residential", 
+     "Ranch / Livestock / Agricultural", 
+     "Recreational / Hunting", 
+     "Investment / Speculation", 
+     "Timber", 
+     "Other / Unsure"]
+)
+
+utilities_on_site = st.selectbox("Utilities available on or near the property?", ["Yes", "No"])
+
+st.divider()
+
+if "report_generated" not in st.session_state:
+    st.session_state.report_generated = False
+
+if st.button("Generate Report", type="primary", use_container_width=True):
+    st.session_state.report_generated = True
+    st.session_state.state = state
+    st.session_state.county_or_city = county_or_city
+    st.session_state.acreage = acreage
+    st.session_state.asking_price = asking_price
+    st.session_state.purpose = purpose
+    st.session_state.utilities_on_site = utilities_on_site
+
+if st.session_state.report_generated:
+    st.success("Report generated successfully!")
+
+    state = st.session_state.state
+    county_or_city = st.session_state.county_or_city
+    acreage = st.session_state.acreage
+    asking_price = st.session_state.asking_price
+    purpose = st.session_state.purpose
+    utilities_on_site = st.session_state.utilities_on_site
+
+    # Tax rate logic
+    if purpose in ["Ranch / Livestock / Agricultural", "Timber"]:
+        effective_tax_rate = 0.0045
+        tax_note = "Assumes qualification for agricultural or wildlife valuation. Actual taxes may be higher if you don't qualify."
+    elif purpose == "Homestead / Residential":
+        effective_tax_rate = 0.012
+        tax_note = "Standard homestead estimate. Agricultural valuation may further reduce taxes if you qualify."
+    else:
+        effective_tax_rate = 0.014
+        tax_note = "Standard valuation estimate. Special use valuations may significantly lower taxes if you qualify."
+
+    # Financial Snapshot
+    st.subheader("💰 Financial Snapshot (Rough Estimates)")
+
+    closing_costs = asking_price * 0.03
+    total_at_closing = asking_price + closing_costs
+    est_annual_taxes = asking_price * effective_tax_rate
+
+    col3, col4 = st.columns(2)
+    with col3:
+        st.metric("Asking Price", f"${asking_price:,.0f}")
+        st.metric("Closing Costs (3%)", f"${closing_costs:,.0f}")
+    with col4:
+        st.metric("Total at Closing", f"${total_at_closing:,.0f}")
+        st.metric("Est. Annual Property Taxes", f"${est_annual_taxes:,.0f}")
+
+    st.write(f"**Price per Acre:** ${asking_price / acreage:,.0f}")
+    st.caption(tax_note)
+
+    if utilities_on_site == "No":
+        st.warning("Utilities not reported on site. Budget for electric line extension, well drilling, and septic system.")
+
+    st.divider()
+
+    # Cost of Living
+    st.subheader("📈 Cost of Living (Monthly Estimates)")
+
+    gas_price = get_eia_gas_price(state)
+
+    if state == "TX":
+        groceries = 880
+        utilities = 245
+        rent = 1250
+    elif state == "OK":
+        groceries = 820
+        utilities = 220
+        rent = 1050
+    elif state == "AR":
+        groceries = 810
+        utilities = 215
+        rent = 1020
+    else:
+        groceries = 850
+        utilities = 230
+        rent = 1100
+
+    col5, col6 = st.columns(2)
+    with col5:
+        st.metric("Groceries (family of 4)", f"${groceries}")
+        st.metric("Gas (per gallon - EIA)", f"${gas_price:.2f}")
+    with col6:
+        st.metric("Utilities", f"${utilities}")
+        st.metric("Rent (2BR small town)", f"${rent}")
+
+    st.caption(f"Gas price pulled live from EIA. Other values are regional estimates for {state} (updated quarterly).")
+
+    st.divider()
+
+    # Cultural & Lifestyle Factors
+    st.subheader("🏡 Cultural & Lifestyle Factors")
+    st.caption(f"Specific data for **{county_or_city}** is limited - here is relevant regional context.")
+
+    with st.expander("🍽️ Food Access & Local Flavor"):
+        st.write("Food access varies by proximity to the nearest county seat. Most rural areas have at least a Dollar General or small grocer. Larger selections (Walmart, Brookshire's, etc.) are found in nearby towns. Local butchers and meat processors are popular with homesteaders. Southern comfort foods, BBQ, and Tex-Mex influences are common. Seasonal farmers markets and roadside stands appear in spring through fall.")
+
+    with st.expander("🎉 Festivals, Entertainment & Community"):
+        st.write("County fairs, rodeos, and church or homecoming events form the heart of social life. These events are a big part of local culture and community connection.")
+
+        st.markdown("**Notable regional events & resources:**")
+        if state == "TX":
+            st.markdown("- [Texas State Fair](https://bigtex.com/) - Major annual event in Dallas")
+            st.markdown("- [Texas Tourism Events](https://www.traveltexas.com/) - Search for festivals and events by region")
+        elif state == "OK":
+            st.markdown("- [Four States Fair & Rodeo](https://www.fourstatesfair.com/)")
+            st.markdown("- [Oklahoma Tourism](https://www.travelok.com/)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Tourism](https://www.arkansas.com/)")
+            st.markdown("- [Arkansas State Fair](https://arkansasstatefair.com/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Travel](https://www.louisianatravel.com/)")
+
+        st.caption("Tip: Search your specific county + 'county fair' or 'festivals' to find current local events.")
+
+    with st.expander("🎓 Education"):
+        st.write("Public K-12 is provided by local school districts. Offerings and performance vary widely. Many families supplement with homeschooling or small private academies. Nearby community colleges and regional universities provide higher-education options.")
+
+        st.markdown("**Find local school district information:**")
+        if state == "TX":
+            st.markdown("- [Texas Education Agency (TEA)](https://tea.texas.gov/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma State Department of Education](https://sde.ok.gov/)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Division of Elementary and Secondary Education](https://dese.ade.arkansas.gov/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Department of Education](https://www.louisianabelieves.com/)")
+
+    with st.expander("🏥 Healthcare"):
+        st.write("Access to healthcare varies significantly between rural and more populated areas.")
+
+        st.markdown("**Healthcare resources by state:**")
+        if state == "TX":
+            st.markdown("- [Texas Health and Human Services](https://www.hhs.texas.gov/)")
+            st.markdown("- [Texas Hospital Association](https://www.tha.org/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma State Department of Health](https://oklahoma.gov/health.html)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Department of Health](https://www.healthy.arkansas.gov/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Department of Health](https://ldh.la.gov/)")
+
+    with st.expander("📡 Internet & Connectivity"):
+        st.write("High-speed internet is often limited in rural areas. Many residents use fixed wireless or satellite (like Starlink).")
+
+        st.markdown("**Helpful resources:**")
+        if state == "TX":
+            st.markdown("- [Texas Broadband Map](https://texasbroadband.texas.gov/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma Broadband](https://oklahoma.gov/omes.html)")
+        st.markdown("- [FCC Broadband Map](https://broadbandmap.fcc.gov/)")
+
+    with st.expander("🚨 Emergency Services"):
+        st.write("Emergency response times can be longer in rural areas (often 15-40+ minutes).")
+
+        st.markdown("**State resources:**")
+        if state == "TX":
+            st.markdown("- [Texas Emergency Management](https://tdem.texas.gov/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma Emergency Management](https://oklahoma.gov/oem.html)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Department of Emergency Management](https://www.adem.arkansas.gov/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Governor's Office of Homeland Security](https://gohsep.la.gov/)")
+
+    with st.expander("🛒 Local Stores & Shopping"):
+        st.write("Most rural areas have at least a Dollar General or small local store. Larger selections are usually found in or near county seats.")
+
+        st.markdown("**Helpful resources:**")
+        st.markdown("- Search Google for your county + 'Chamber of Commerce' for local business listings.")
+        st.markdown("**Common chains:** Walmart, Brookshire's, Tractor Supply, Atwoods.")
+
+        if state == "TX":
+            st.markdown("- [Texas Chamber of Commerce Directory](https://www.texasstatechamber.org/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma Chamber of Commerce](https://www.okstatechamber.com/)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Chamber of Commerce](https://www.arkansaschamber.com/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Chamber of Commerce](https://www.louisianachamber.org/)")
+
+    with st.expander("🛡️ Safety & Rural Context"):
+        st.write("Violent crime rates in rural areas are typically well below the U.S. average. Most people describe these communities as safe and neighborly.")
+
+    st.caption("Note: Specific local options can vary. Always verify current information locally.")
+
+    st.divider()
+
+    # === REGIONAL INSIGHTS ===
+    st.subheader("📍 Regional Insights & Things to Consider")
+
+    insights = [
+        "**Mineral rights & title** - Severed mineral estates are extremely common. Always get a full title abstract and consult a local attorney.",
+        "**Special valuation programs** - Agricultural, timber, and wildlife valuations can dramatically reduce property taxes if you qualify.",
+        "**Water sources & realities** - Most rural parcels rely on private wells. Understand local aquifer and water rights rules.",
+        "**Soil, drainage & growing conditions** - Much of the region has heavy clay or clay-loam soils. Get a soil test through your county extension office.",
+        "**Connectivity & services** - High-speed internet is often limited. Starlink is popular in many rural areas.",
+        "**Wildlife, fencing & land use** - Deer and feral hogs are abundant. Good perimeter fencing is essential.",
+        "**Texas school district taxes** - Even with ag valuation, the school district portion of your tax bill is often the largest.",
+        "**Homesteading realities** - Begin with a soil test. Plan for high summer cooling loads and strong perimeter fencing.",
+    ]
+
+    for i, insight in enumerate(insights, 1):
+        st.write(f"**{i}.** {insight}")
+
+    st.divider()
+
+    # === CHECKLIST (Web App) ===
+    checklist = [
+        "Order a current survey and review all easements and encroachments.",
+        "Check the property against current FEMA flood maps.",
+        "Perform a thorough title search (especially for mineral rights).",
+        "Ask about agricultural, timber, or wildlife valuation programs in your state.",
+        "Get written estimates for utilities, well drilling, and septic if not on site.",
+        "Test or research water availability and understand local water rights.",
+        "Evaluate internet and cell coverage on the property.",
+        "Review county zoning, subdivision regulations, and building permits.",
+        "Arrange a perc test if installing a septic system.",
+        "Walk the boundaries and talk to neighbors.",
+        "Budget for fencing, gravel drive, and outbuildings.",
+        "Get insurance quotes early.",
+        "Visit the county extension office for soil maps and local growing advice.",
+        "In Texas, confirm school district tax rates and any special district taxes.",
+    ]
+
+    st.subheader("✅ Important Considerations Checklist")
+
+    for item in checklist:
+        st.checkbox(item)
+
+    st.divider()
+
+    # === PDF EXPORT (Checklist on Page 2 as Table) ===
+    if st.button("Download Report as PDF", use_container_width=True):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_auto_page_break(auto=True, margin=15)
+
+        # ========== PAGE 1 ==========
+        pdf.set_font("Arial", "B", 18)
+        pdf.cell(0, 12, "Red River Gems Land Analyzer Report", ln=True, align="C")
+        pdf.ln(3)
+
+        pdf.set_font("Arial", size=11)
+        pdf.cell(0, 8, f"Location: {county_or_city}, {state}  |  Acreage: {acreage} acres  |  Asking Price: ${asking_price:,.0f}", ln=True, align="C")
+        pdf.ln(8)
+
+        # Financial Snapshot
+        pdf.set_font("Arial", "B", 13)
+        pdf.cell(0, 8, "Financial Snapshot (Rough Estimates)", ln=True)
+        pdf.set_font("Arial", size=11)
+        pdf.multi_cell(0, 7, f"Asking Price: ${asking_price:,.0f}\n"
+                           f"Buyer Closing Costs (3%): ${closing_costs:,.0f}\n"
+                           f"Total at Closing: ${total_at_closing:,.0f}\n"
+                           f"Est. Annual Property Taxes: ${est_annual_taxes:,.0f}\n"
+                           f"Price per Acre: ${asking_price / acreage:,.0f}")
+
+        pdf.ln(2)
+        pdf.set_font("Arial", "I", 10)
+        pdf.multi_cell(0, 6, f"Tax estimate based on intended use: {purpose}. {tax_note}")
+
+        if utilities_on_site == "No":
+            pdf.ln(2)
+            pdf.set_font("Arial", "I", 10)
+            pdf.multi_cell(0, 6, "Note: Utilities not reported on site. Budget for electric line extension, well drilling, and septic system.")
+
+        pdf.ln(5)
+
+        # Cost of Living
+        pdf.set_font("Arial", "B", 13)
+        pdf.cell(0, 8, "Cost of Living (Monthly Estimates)", ln=True)
+        pdf.set_font("Arial", size=11)
+        pdf.multi_cell(0, 7, f"Groceries (family of 4): ${groceries}\n"
+                           f"Gasoline (per gallon): ${gas_price:.2f} (EIA live data)\n"
+                           f"Utilities (electric + water + trash): ${utilities}\n"
+                           f"Rent (approx 2BR in small town): ${rent}")
+
+        pdf.ln(5)
+
+        # Cultural & Lifestyle
+        pdf.set_font("Arial", "B", 13)
+        pdf.cell(0, 8, "Cultural & Lifestyle Factors", ln=True)
+        pdf.set_font("Arial", size=11)
+        pdf.multi_cell(0, 7, "This report includes regional context for Food Access, Festivals & Community Events, "
+                           "Education, Healthcare, Internet Connectivity, Emergency Services, Local Stores & Shopping, "
+                           "and Safety. Specific local options can vary - always verify current information locally.")
+
+        pdf.ln(5)
+
+        # Key Regional Insights
+        pdf.set_font("Arial", "B", 13)
+        pdf.cell(0, 8, "Key Regional Insights", ln=True)
+        pdf.set_font("Arial", size=11)
+        pdf.multi_cell(0, 7, "- Mineral rights are often severed - always get a full title abstract.\n"
+                           "- Agricultural and wildlife valuations can significantly reduce property taxes if you qualify.\n"
+                           "- Most rural parcels rely on private wells - understand local water rights.\n"
+                           "- High-speed internet is often limited; Starlink is commonly used.\n"
+                           "- Wildlife (deer, feral hogs) is abundant - good fencing is essential.\n"
+                           "- Emergency response times can be 15-40+ minutes in remote areas.")
+
+        # ========== PAGE 2 - CHECKLIST AS TABLE ==========
+        pdf.add_page()
+
+        pdf.set_font("Arial", "B", 16)
+        pdf.cell(0, 12, "Important Considerations Checklist", ln=True, align="C")
+        pdf.ln(8)
+
+        # Table Header
+        pdf.set_font("Arial", "B", 10)
+        pdf.set_fill_color(230, 230, 230)
+        pdf.cell(10, 8, "#", border=1, align="C", fill=True)
+        pdf.cell(180, 8, "Item", border=1, align="L", fill=True)
+        pdf.ln()
+
+        # Table Rows
+        checklist_items = [
+            "Order a current survey and review all easements and encroachments.",
+            "Check the property against current FEMA flood maps.",
+            "Perform a thorough title search (especially for mineral rights).",
+            "Ask about agricultural, timber, or wildlife valuation programs in your state.",
+            "Get written estimates for utilities, well drilling, and septic if not on site.",
+            "Test or research water availability and understand local water rights.",
+            "Evaluate internet and cell coverage on the property.",
+            "Review county zoning, subdivision regulations, and building permits.",
+            "Arrange a perc test if installing a septic system.",
+            "Walk the boundaries and talk to neighbors.",
+            "Budget for fencing, gravel drive, and outbuildings.",
+            "Get insurance quotes early.",
+            "Visit the county extension office for soil maps and local growing advice.",
+            "In Texas, confirm school district tax rates and any special district taxes.",
+        ]
+
+        pdf.set_font("Arial", size=9)
+        for i, item in enumerate(checklist_items, 1):
+            pdf.cell(10, 7, str(i), border=1, align="C")
+            pdf.cell(180, 7, item, border=1, align="L")
+            pdf.ln()
+
+        pdf.ln(10)
+
+        # Footer on page 2
+        pdf.set_font("Arial", "I", 9)
+        pdf.multi_cell(0, 6, "© 2026 Red River Gems. All rights reserved.\n"
+                           "Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner.\n"
+                           "This report uses approximate 2025-2026 regional data for planning purposes only. "
+                           "Nothing here is financial, legal, tax, or real estate advice.")
+
+        pdf_output = bytes(pdf.output(dest="S"))
+
+        st.download_button(
+            label="Download PDF",
+            data=pdf_output,
+            file_name=f"RedRiverGems_Report_{county_or_city.replace(' ', '_')}.pdf",
+            mime="application/pdf"
+        )
+
+    st.success("Report complete. Always verify information with local professionals before making decisions.")
+
+st.divider()
+st.caption("© 2026 Red River Gems. All rights reserved. Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner. "
+           "This tool is provided for personal and educational use only.")

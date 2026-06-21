@@ -31,11 +31,18 @@ def get_eia_gas_price(state):
     return fallback_prices.get(state, 3.45)
 
 
+# ==================== IMPROVED WELCOME ====================
 st.title("🌾 Red River Gems Land Analyzer")
-st.markdown("Practical research reports for land and homestead buyers in **Texas, Oklahoma, Arkansas, and Louisiana**.")
+
+st.markdown("""
+**Free tool to help you research and evaluate land** across Texas, Oklahoma, Arkansas, and Louisiana.
+
+Get realistic cost estimates, tax guidance based on how you plan to use the land, current regional data, and a full due diligence checklist — all in one clean, downloadable report.
+""")
 
 st.divider()
 
+# === INPUTS ===
 st.header("Enter Property Details")
 
 col1, col2 = st.columns(2)
@@ -293,13 +300,13 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # === PDF EXPORT (Checklist on Page 2 as Table) ===
+    # === PDF EXPORT (Checklist on Page 2) ===
     if st.button("Download Report as PDF", use_container_width=True):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_auto_page_break(auto=True, margin=15)
 
-        # ========== PAGE 1 ==========
+        # PAGE 1
         pdf.set_font("Arial", "B", 18)
         pdf.cell(0, 12, "Red River Gems Land Analyzer Report", ln=True, align="C")
         pdf.ln(3)
@@ -308,7 +315,6 @@ if st.session_state.report_generated:
         pdf.cell(0, 8, f"Location: {county_or_city}, {state}  |  Acreage: {acreage} acres  |  Asking Price: ${asking_price:,.0f}", ln=True, align="C")
         pdf.ln(8)
 
-        # Financial Snapshot
         pdf.set_font("Arial", "B", 13)
         pdf.cell(0, 8, "Financial Snapshot (Rough Estimates)", ln=True)
         pdf.set_font("Arial", size=11)
@@ -329,7 +335,6 @@ if st.session_state.report_generated:
 
         pdf.ln(5)
 
-        # Cost of Living
         pdf.set_font("Arial", "B", 13)
         pdf.cell(0, 8, "Cost of Living (Monthly Estimates)", ln=True)
         pdf.set_font("Arial", size=11)
@@ -340,7 +345,6 @@ if st.session_state.report_generated:
 
         pdf.ln(5)
 
-        # Cultural & Lifestyle
         pdf.set_font("Arial", "B", 13)
         pdf.cell(0, 8, "Cultural & Lifestyle Factors", ln=True)
         pdf.set_font("Arial", size=11)
@@ -350,7 +354,6 @@ if st.session_state.report_generated:
 
         pdf.ln(5)
 
-        # Key Regional Insights
         pdf.set_font("Arial", "B", 13)
         pdf.cell(0, 8, "Key Regional Insights", ln=True)
         pdf.set_font("Arial", size=11)
@@ -361,21 +364,19 @@ if st.session_state.report_generated:
                            "- Wildlife (deer, feral hogs) is abundant - good fencing is essential.\n"
                            "- Emergency response times can be 15-40+ minutes in remote areas.")
 
-        # ========== PAGE 2 - CHECKLIST AS TABLE ==========
+        # PAGE 2 - Checklist as Table
         pdf.add_page()
 
         pdf.set_font("Arial", "B", 16)
         pdf.cell(0, 12, "Important Considerations Checklist", ln=True, align="C")
         pdf.ln(8)
 
-        # Table Header
         pdf.set_font("Arial", "B", 10)
         pdf.set_fill_color(230, 230, 230)
         pdf.cell(10, 8, "#", border=1, align="C", fill=True)
         pdf.cell(180, 8, "Item", border=1, align="L", fill=True)
         pdf.ln()
 
-        # Table Rows
         checklist_items = [
             "Order a current survey and review all easements and encroachments.",
             "Check the property against current FEMA flood maps.",
@@ -401,7 +402,6 @@ if st.session_state.report_generated:
 
         pdf.ln(10)
 
-        # Footer on page 2
         pdf.set_font("Arial", "I", 9)
         pdf.multi_cell(0, 6, "© 2026 Red River Gems. All rights reserved.\n"
                            "Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner.\n"
@@ -419,6 +419,13 @@ if st.session_state.report_generated:
 
     st.success("Report complete. Always verify information with local professionals before making decisions.")
 
+# ==================== IMPROVED FOOTER WITH SOCIAL LINKS ====================
 st.divider()
-st.caption("© 2026 Red River Gems. All rights reserved. Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner. "
-           "This tool is provided for personal and educational use only.")
+
+st.caption("""
+© 2026 Red River Gems. All rights reserved.  
+Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner.
+
+Follow for more land & homesteading content:  
+[ TikTok](https://www.tiktok.com/@YOUR_TIKTOK) • [Instagram](https://www.instagram.com/YOUR_INSTAGRAM)
+""")

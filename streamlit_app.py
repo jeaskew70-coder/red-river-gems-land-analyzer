@@ -6,7 +6,7 @@ st.set_page_config(page_title="Red River Gems Land Analyzer", page_icon="🌾", 
 
 # ==================== API KEYS ====================
 EIA_API_KEY = "jjD5aFx44aC5JSiPDU63fG4f5By7XdHRNYsmqAM8"
-OPENWEATHER_API_KEY = "YOUR_OPENWEATHER_API_KEY_HERE"   # ← Replace this later
+OPENWEATHER_API_KEY = "80103cffa2d1802f17caa5bfc3bc8f27"
 
 def get_eia_gas_price(state):
     padd_map = {
@@ -31,10 +31,14 @@ def get_eia_gas_price(state):
     return fallback_prices.get(state, 3.45)
 
 
-def get_current_weather(city):
+def get_current_weather(city, state_code):
     if not city:
         return None
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=imperial"
+    
+    # Include state for better accuracy (e.g. "Canton,TX,US")
+    query = f"{city},{state_code},US"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={query}&appid={OPENWEATHER_API_KEY}&units=imperial"
+    
     try:
         response = requests.get(url, timeout=10)
         data = response.json()
@@ -46,7 +50,7 @@ def get_current_weather(city):
                 "city": data["name"]
             }
     except:
-        return None
+        pass
     return None
 
 
@@ -143,11 +147,11 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # ==================== NEW WEATHER & CLIMATE EXPANDER ====================
+    # ==================== WEATHER & CLIMATE EXPANDER ====================
     with st.expander("🌤️ Weather, Climate & Environmental Conditions"):
         st.write(f"**Current conditions near {county_or_city or 'the selected area'}**")
 
-        weather = get_current_weather(county_or_city) if county_or_city else None
+        weather = get_current_weather(county_or_city, state) if county_or_city else None
 
         if weather:
             colw1, colw2 = st.columns(2)
@@ -158,11 +162,11 @@ if st.session_state.report_generated:
                 st.write(f"**Conditions:** {weather['description']}")
                 st.write(f"**Location:** {weather['city']}")
         else:
-            st.info("Enter a city name above to see current weather conditions.")
+            st.info("Enter a city name above (example: Canton or Paris) to see current weather conditions.")
 
         st.divider()
 
-        # Climate Averages (State-based)
+        # Climate Averages
         st.subheader("Regional Climate Averages")
 
         if state == "TX":
@@ -180,7 +184,7 @@ if st.session_state.report_generated:
             st.write("- Average Annual Rainfall: ~48–55 inches")
             st.write("- Average High Temp (Summer): 90–93°F")
             st.write("- Average Low Temp (Winter): 30–36°F")
-        else:  # LA
+        else:
             st.write("**Northwest Louisiana:**")
             st.write("- Average Annual Rainfall: ~50–58 inches")
             st.write("- Average High Temp (Summer): 91–94°F")
@@ -191,17 +195,9 @@ if st.session_state.report_generated:
         # Drought Link
         st.subheader("Drought Conditions")
         st.write("Check the latest drought status for your area:")
-        drought_links = {
-            "TX": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
-            "OK": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
-            "AR": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
-            "LA": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
-        }
-        st.markdown(f"[View Live U.S. Drought Monitor Map]({drought_links[state]})")
+        st.markdown("[View Live U.S. Drought Monitor Map](https://droughtmonitor.unl.edu/CurrentConditions.aspx)")
 
-    # ==================== REST OF THE APP ====================
-
-    # Cost of Living
+    # ==================== COST OF LIVING ====================
     st.subheader("📈 Cost of Living (Monthly Estimates)")
 
     gas_price = get_eia_gas_price(state)
@@ -504,5 +500,5 @@ st.caption("""
 Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner.
 
 Follow for more land & homesteading content:  
-[ TikTok](https://www.tiktok.com/@redrivergems) • [Instagram](https://www.instagram.com/redrivergems)
+[ TikTok](https://www.tiktok.com/@YOUR_TIKTOK) • [Instagram](https://www.instagram.com/YOUR_INSTAGRAM)
 """)

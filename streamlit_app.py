@@ -4,7 +4,9 @@ import requests
 
 st.set_page_config(page_title="Red River Gems Land Analyzer", page_icon="🌾", layout="centered")
 
+# ==================== API KEYS ====================
 EIA_API_KEY = "jjD5aFx44aC5JSiPDU63fG4f5By7XdHRNYsmqAM8"
+OPENWEATHER_API_KEY = "YOUR_OPENWEATHER_API_KEY_HERE"   # ← Replace this later
 
 def get_eia_gas_price(state):
     padd_map = {
@@ -20,18 +22,35 @@ def get_eia_gas_price(state):
     try:
         response = requests.get(url, timeout=10)
         data = response.json()
-        
         if "series" in data and len(data["series"]) > 0:
             latest = data["series"][0]["data"][0]
             return round(float(latest[1]), 2)
     except:
         pass
-    
     fallback_prices = {"TX": 3.45, "OK": 3.35, "AR": 3.30, "LA": 3.50}
     return fallback_prices.get(state, 3.45)
 
 
-# ==================== IMPROVED WELCOME ====================
+def get_current_weather(city):
+    if not city:
+        return None
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=imperial"
+    try:
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        if data.get("cod") == 200:
+            return {
+                "temp": round(data["main"]["temp"]),
+                "description": data["weather"][0]["description"].title(),
+                "humidity": data["main"]["humidity"],
+                "city": data["name"]
+            }
+    except:
+        return None
+    return None
+
+
+# ==================== HEADER ====================
 st.title("🌾 Red River Gems Land Analyzer")
 
 st.markdown("""
@@ -123,6 +142,64 @@ if st.session_state.report_generated:
         st.warning("Utilities not reported on site. Budget for electric line extension, well drilling, and septic system.")
 
     st.divider()
+
+    # ==================== NEW WEATHER & CLIMATE EXPANDER ====================
+    with st.expander("🌤️ Weather, Climate & Environmental Conditions"):
+        st.write(f"**Current conditions near {county_or_city or 'the selected area'}**")
+
+        weather = get_current_weather(county_or_city) if county_or_city else None
+
+        if weather:
+            colw1, colw2 = st.columns(2)
+            with colw1:
+                st.metric("Temperature", f"{weather['temp']}°F")
+                st.metric("Humidity", f"{weather['humidity']}%")
+            with colw2:
+                st.write(f"**Conditions:** {weather['description']}")
+                st.write(f"**Location:** {weather['city']}")
+        else:
+            st.info("Enter a city name above to see current weather conditions.")
+
+        st.divider()
+
+        # Climate Averages (State-based)
+        st.subheader("Regional Climate Averages")
+
+        if state == "TX":
+            st.write("**Northeast Texas / Red River area:**")
+            st.write("- Average Annual Rainfall: ~45–50 inches")
+            st.write("- Average High Temp (Summer): 92–95°F")
+            st.write("- Average Low Temp (Winter): 32–38°F")
+        elif state == "OK":
+            st.write("**Southeast Oklahoma / Red River area:**")
+            st.write("- Average Annual Rainfall: ~40–48 inches")
+            st.write("- Average High Temp (Summer): 90–94°F")
+            st.write("- Average Low Temp (Winter): 28–35°F")
+        elif state == "AR":
+            st.write("**Southwest Arkansas:**")
+            st.write("- Average Annual Rainfall: ~48–55 inches")
+            st.write("- Average High Temp (Summer): 90–93°F")
+            st.write("- Average Low Temp (Winter): 30–36°F")
+        else:  # LA
+            st.write("**Northwest Louisiana:**")
+            st.write("- Average Annual Rainfall: ~50–58 inches")
+            st.write("- Average High Temp (Summer): 91–94°F")
+            st.write("- Average Low Temp (Winter): 35–40°F")
+
+        st.divider()
+
+        # Drought Link
+        st.subheader("Drought Conditions")
+        st.write("Check the latest drought status for your area:")
+        drought_links = {
+            "TX": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
+            "OK": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
+            "AR": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
+            "LA": "https://droughtmonitor.unl.edu/CurrentConditions.aspx",
+        }
+        st.markdown(f"[View Live U.S. Drought Monitor Map]({drought_links[state]})")
+
+    # ==================== REST OF THE APP ====================
 
     # Cost of Living
     st.subheader("📈 Cost of Living (Monthly Estimates)")
@@ -275,7 +352,7 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # === CHECKLIST (Web App) ===
+    # === CHECKLIST ===
     checklist = [
         "Order a current survey and review all easements and encroachments.",
         "Check the property against current FEMA flood maps.",
@@ -300,13 +377,12 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # === PDF EXPORT (Checklist on Page 2) ===
+    # === PDF EXPORT ===
     if st.button("Download Report as PDF", use_container_width=True):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_auto_page_break(auto=True, margin=15)
 
-        # PAGE 1
         pdf.set_font("Arial", "B", 18)
         pdf.cell(0, 12, "Red River Gems Land Analyzer Report", ln=True, align="C")
         pdf.ln(3)
@@ -364,9 +440,10 @@ if st.session_state.report_generated:
                            "- Wildlife (deer, feral hogs) is abundant - good fencing is essential.\n"
                            "- Emergency response times can be 15-40+ minutes in remote areas.")
 
-        # PAGE 2 - Checklist as Table
-        pdf.add_page()
+        pdf.ln(5)
 
+        # Checklist on Page 2
+        pdf.add_page()
         pdf.set_font("Arial", "B", 16)
         pdf.cell(0, 12, "Important Considerations Checklist", ln=True, align="C")
         pdf.ln(8)
@@ -419,7 +496,7 @@ if st.session_state.report_generated:
 
     st.success("Report complete. Always verify information with local professionals before making decisions.")
 
-# ==================== IMPROVED FOOTER WITH SOCIAL LINKS ====================
+# ==================== FOOTER ====================
 st.divider()
 
 st.caption("""
@@ -427,5 +504,5 @@ st.caption("""
 Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner.
 
 Follow for more land & homesteading content:  
-[ TikTok](https://www.tiktok.com/@YOUR_TIKTOK) • [Instagram](https://www.instagram.com/YOUR_INSTAGRAM)
+[ TikTok](https://www.tiktok.com/@redrivergems) • [Instagram](https://www.instagram.com/redrivergems)
 """)

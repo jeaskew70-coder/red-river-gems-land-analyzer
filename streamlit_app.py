@@ -151,27 +151,45 @@ if st.session_state.report_generated:
     st.caption(f"Specific data for **{county_or_city}** is limited — here is relevant regional context for the Red River area.")
 
     with st.expander("🍽️ Food Access & Local Flavor"):
-        st.write("Food access in the Red River region varies depending on how close you are to a county seat or larger town. Most rural areas have at least a Dollar General, Brookshire’s, or small local grocer. Larger selections are usually found in nearby towns.")
-        st.write("Local food culture leans heavily into Southern comfort food, BBQ, catfish, fried vegetables, and Tex-Mex or Cajun influences depending on the exact area. Many homesteaders also rely on local butchers and meat processors.")
-        st.write("**What living here often feels like:** Expect a slower pace with strong food traditions. Many people grow gardens, hunt, or fish to supplement groceries. Seasonal farmers markets and roadside stands appear in spring through fall.")
+        st.write("Food access in the Red River region varies depending on how close you are to a county seat or larger town. Most rural areas have at least a Dollar General, Brookshire’s, or small local grocer.")
+        st.write("Local food culture leans heavily into Southern comfort food, BBQ, catfish, fried vegetables, and Tex-Mex or Cajun influences. Many homesteaders also rely on local butchers and meat processors.")
+        st.write("**What living here often feels like:** Expect a slower pace with strong food traditions. Many people grow gardens, hunt, or fish to supplement groceries.")
 
     with st.expander("🎉 Festivals, Entertainment & Community"):
-        st.write("County fairs, rodeos, church events, and homecoming celebrations form the heartbeat of social life in the Red River region. These events are deeply tied to local culture and community connection.")
-        st.write("Larger entertainment options (movies, dining, shopping) are usually a 30–90 minute drive to places like Paris TX, Texarkana, Shreveport, or Ardmore OK.")
-        st.write("**Notable regional events:**")
+        st.write("County fairs, rodeos, and church/homecoming events form the heartbeat of social life in the Red River region. Larger entertainment options are usually a 30–90 minute drive to regional hubs.")
+
+        st.write("**Notable events by state:**")
+
         if state == "TX":
-            st.markdown("- [Texas State Fair](https://bigtex.com/) — Major annual event in Dallas")
-            st.markdown("- Many counties have well-attended rodeos and livestock shows in spring and fall.")
+            st.markdown("**Texas:**")
+            st.markdown("- [Texas State Fair](https://bigtex.com/) — One of the largest state fairs in the U.S. (Dallas)")
+            st.markdown("- [Fort Worth Stock Show & Rodeo](https://www.fwssr.com/) — Major livestock and rodeo event")
+            st.markdown("- Many counties host well-attended rodeos and fairs throughout the year")
+
         elif state == "OK":
-            st.markdown("- [Four States Fair & Rodeo](https://www.fourstatesfair.com/)")
+            st.markdown("**Oklahoma:**")
+            st.markdown("- [Four States Fair & Rodeo](https://www.fourstatesfair.com/) — Popular regional fair serving southeast OK")
+            st.markdown("- [Oklahoma State Fair](https://www.okstatefair.com/) — Major annual event in Oklahoma City")
+            st.markdown("- County fairs and rodeos are very common across the state")
+
         elif state == "AR":
-            st.markdown("- County fairs and harvest festivals are very common in the fall.")
+            st.markdown("**Arkansas:**")
+            st.markdown("- [Arkansas State Fair](https://arkansasstatefair.com/) — Major annual event in Little Rock")
+            st.markdown("- [King Biscuit Blues Festival](https://www.kingbiscuitfestival.com/) — Well-known cultural event in Helena")
+            st.markdown("- Many county fairs and harvest festivals in the fall")
+
         elif state == "LA":
-            st.markdown("- Strong Cajun and festival culture with many small community events.")
+            st.markdown("**Louisiana:**")
+            st.markdown("- [Louisiana State Fair](https://www.louisianastatefair.org/) — Held in Shreveport (very relevant for northwest LA)")
+            st.markdown("- Strong local festival culture with many community events throughout the year")
+            st.markdown("- Crawfish and Cajun festivals are popular in spring")
+
+        st.write("**Tip:** Search your specific county + “county fair” or “rodeo” to find current local events.")
 
     with st.expander("🎓 Education"):
-        st.write("Public K-12 education is provided by local school districts, and quality can vary significantly between districts. Many rural families supplement with homeschooling or small private options.")
-        st.write("Higher education options in the broader region include community colleges and universities such as Texas A&M-Commerce, Southeastern Oklahoma State, and others.")
+        st.write("Public K-12 is provided by local school districts, with varying quality. Many rural families supplement with homeschooling or small private options.")
+        st.write("Higher education options in the region include community colleges and universities such as Texas A&M-Commerce and Southeastern Oklahoma State.")
+
         st.write("**Helpful resources:**")
         if state == "TX":
             st.markdown("- [Texas Education Agency (TEA)](https://tea.texas.gov/)")
@@ -183,8 +201,8 @@ if st.session_state.report_generated:
             st.markdown("- [Louisiana Department of Education](https://www.louisianabelieves.com/)")
 
     with st.expander("🏥 Healthcare"):
-        st.write("Access to healthcare varies significantly between rural areas and towns with hospitals. Many smaller communities have clinics, but major hospitals and specialists are usually located in larger regional hubs.")
-        st.write("**Helpful resources by state:**")
+        st.write("Access to healthcare varies between rural areas and towns with hospitals. Major hospitals and specialists are usually in larger regional hubs.")
+        st.write("**Helpful resources:**")
         if state == "TX":
             st.markdown("- [Texas Health and Human Services](https://www.hhs.texas.gov/)")
         elif state == "OK":
@@ -195,14 +213,14 @@ if st.session_state.report_generated:
             st.markdown("- [Louisiana Department of Health](https://ldh.la.gov/)")
 
     with st.expander("📡 Internet & Connectivity"):
-        st.write("High-speed internet is often limited in rural parts of the Red River region. Many residents rely on fixed wireless providers or satellite internet (such as Starlink). Cell coverage can also be spotty in more remote areas.")
+        st.write("High-speed internet is often limited in rural areas. Many residents use fixed wireless or satellite (such as Starlink). Cell coverage can also be spotty in remote locations.")
         st.write("**Helpful resources:**")
         if state == "TX":
             st.markdown("- [Texas Broadband Map](https://texasbroadband.texas.gov/)")
         st.markdown("- [FCC Broadband Map](https://broadbandmap.fcc.gov/)")
 
     with st.expander("🚨 Emergency Services"):
-        st.write("Emergency response times in rural areas are often longer than in towns or cities (commonly 15–40+ minutes depending on location). Many counties rely on volunteer fire departments and limited EMS coverage.")
+        st.write("Emergency response times in rural areas are often longer (commonly 15–40+ minutes). Many counties rely on volunteer fire departments.")
         st.write("**State resources:**")
         if state == "TX":
             st.markdown("- [Texas Emergency Management](https://tdem.texas.gov/)")
@@ -214,20 +232,17 @@ if st.session_state.report_generated:
             st.markdown("- [Louisiana Governor's Office of Homeland Security](https://gohsep.la.gov/)")
 
     with st.expander("🛒 Local Stores & Shopping"):
-        st.write("Most rural areas have at least a Dollar General or small local store. Larger selections (Walmart, Brookshire’s, Tractor Supply, etc.) are usually found in or near county seats. Many locals also shop in nearby larger towns for bigger purchases.")
-        st.write("**Helpful resources:** Search Google for your county + “Chamber of Commerce” for local business listings.")
+        st.write("Most rural areas have at least a Dollar General or small local store. Larger selections are usually found in or near county seats.")
+        st.write("**Helpful tip:** Search Google for your county + “Chamber of Commerce” for local business listings.")
 
     with st.expander("🛡️ Safety & Rural Context"):
-        st.write("Violent crime rates in rural areas of the Red River region are typically well below the U.S. average. Most people describe these communities as safe and neighborly. Property crime (such as theft from outbuildings or equipment) can occasionally be a concern in more remote areas.")
-        st.write("**Tip:** Talk to neighbors and local law enforcement when evaluating a property.")
+        st.write("Violent crime rates in rural areas are typically well below the U.S. average. Most people describe these communities as safe and neighborly. Property crime (theft from outbuildings or equipment) can occasionally be a concern in more remote areas.")
 
     st.caption("Note: Specific local options can vary. Always verify current information locally.")
 
     st.divider()
 
-    # ==================== WEATHER and the rest of the app ====================
-    # (Weather expander + Cost of Living + Regional Insights + Checklist + PDF remain the same as previous version)
-
+    # Weather Expander
     with st.expander("🌤️ Weather, Climate & Environmental Conditions"):
         st.write(f"**Current conditions near {county_or_city or 'the selected area'}**")
 

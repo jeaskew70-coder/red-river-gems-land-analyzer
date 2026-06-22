@@ -146,7 +146,88 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # ==================== WEATHER & CLIMATE EXPANDER ====================
+    # ==================== IMPROVED CULTURAL & LIFESTYLE SECTION ====================
+    st.subheader("🏡 Cultural & Lifestyle Factors")
+    st.caption(f"Specific data for **{county_or_city}** is limited — here is relevant regional context for the Red River area.")
+
+    with st.expander("🍽️ Food Access & Local Flavor"):
+        st.write("Food access in the Red River region varies depending on how close you are to a county seat or larger town. Most rural areas have at least a Dollar General, Brookshire’s, or small local grocer. Larger selections are usually found in nearby towns.")
+        st.write("Local food culture leans heavily into Southern comfort food, BBQ, catfish, fried vegetables, and Tex-Mex or Cajun influences depending on the exact area. Many homesteaders also rely on local butchers and meat processors.")
+        st.write("**What living here often feels like:** Expect a slower pace with strong food traditions. Many people grow gardens, hunt, or fish to supplement groceries. Seasonal farmers markets and roadside stands appear in spring through fall.")
+
+    with st.expander("🎉 Festivals, Entertainment & Community"):
+        st.write("County fairs, rodeos, church events, and homecoming celebrations form the heartbeat of social life in the Red River region. These events are deeply tied to local culture and community connection.")
+        st.write("Larger entertainment options (movies, dining, shopping) are usually a 30–90 minute drive to places like Paris TX, Texarkana, Shreveport, or Ardmore OK.")
+        st.write("**Notable regional events:**")
+        if state == "TX":
+            st.markdown("- [Texas State Fair](https://bigtex.com/) — Major annual event in Dallas")
+            st.markdown("- Many counties have well-attended rodeos and livestock shows in spring and fall.")
+        elif state == "OK":
+            st.markdown("- [Four States Fair & Rodeo](https://www.fourstatesfair.com/)")
+        elif state == "AR":
+            st.markdown("- County fairs and harvest festivals are very common in the fall.")
+        elif state == "LA":
+            st.markdown("- Strong Cajun and festival culture with many small community events.")
+
+    with st.expander("🎓 Education"):
+        st.write("Public K-12 education is provided by local school districts, and quality can vary significantly between districts. Many rural families supplement with homeschooling or small private options.")
+        st.write("Higher education options in the broader region include community colleges and universities such as Texas A&M-Commerce, Southeastern Oklahoma State, and others.")
+        st.write("**Helpful resources:**")
+        if state == "TX":
+            st.markdown("- [Texas Education Agency (TEA)](https://tea.texas.gov/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma State Department of Education](https://sde.ok.gov/)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Division of Elementary and Secondary Education](https://dese.ade.arkansas.gov/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Department of Education](https://www.louisianabelieves.com/)")
+
+    with st.expander("🏥 Healthcare"):
+        st.write("Access to healthcare varies significantly between rural areas and towns with hospitals. Many smaller communities have clinics, but major hospitals and specialists are usually located in larger regional hubs.")
+        st.write("**Helpful resources by state:**")
+        if state == "TX":
+            st.markdown("- [Texas Health and Human Services](https://www.hhs.texas.gov/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma State Department of Health](https://oklahoma.gov/health.html)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Department of Health](https://www.healthy.arkansas.gov/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Department of Health](https://ldh.la.gov/)")
+
+    with st.expander("📡 Internet & Connectivity"):
+        st.write("High-speed internet is often limited in rural parts of the Red River region. Many residents rely on fixed wireless providers or satellite internet (such as Starlink). Cell coverage can also be spotty in more remote areas.")
+        st.write("**Helpful resources:**")
+        if state == "TX":
+            st.markdown("- [Texas Broadband Map](https://texasbroadband.texas.gov/)")
+        st.markdown("- [FCC Broadband Map](https://broadbandmap.fcc.gov/)")
+
+    with st.expander("🚨 Emergency Services"):
+        st.write("Emergency response times in rural areas are often longer than in towns or cities (commonly 15–40+ minutes depending on location). Many counties rely on volunteer fire departments and limited EMS coverage.")
+        st.write("**State resources:**")
+        if state == "TX":
+            st.markdown("- [Texas Emergency Management](https://tdem.texas.gov/)")
+        elif state == "OK":
+            st.markdown("- [Oklahoma Emergency Management](https://oklahoma.gov/oem.html)")
+        elif state == "AR":
+            st.markdown("- [Arkansas Department of Emergency Management](https://www.adem.arkansas.gov/)")
+        elif state == "LA":
+            st.markdown("- [Louisiana Governor's Office of Homeland Security](https://gohsep.la.gov/)")
+
+    with st.expander("🛒 Local Stores & Shopping"):
+        st.write("Most rural areas have at least a Dollar General or small local store. Larger selections (Walmart, Brookshire’s, Tractor Supply, etc.) are usually found in or near county seats. Many locals also shop in nearby larger towns for bigger purchases.")
+        st.write("**Helpful resources:** Search Google for your county + “Chamber of Commerce” for local business listings.")
+
+    with st.expander("🛡️ Safety & Rural Context"):
+        st.write("Violent crime rates in rural areas of the Red River region are typically well below the U.S. average. Most people describe these communities as safe and neighborly. Property crime (such as theft from outbuildings or equipment) can occasionally be a concern in more remote areas.")
+        st.write("**Tip:** Talk to neighbors and local law enforcement when evaluating a property.")
+
+    st.caption("Note: Specific local options can vary. Always verify current information locally.")
+
+    st.divider()
+
+    # ==================== WEATHER and the rest of the app ====================
+    # (Weather expander + Cost of Living + Regional Insights + Checklist + PDF remain the same as previous version)
+
     with st.expander("🌤️ Weather, Climate & Environmental Conditions"):
         st.write(f"**Current conditions near {county_or_city or 'the selected area'}**")
 
@@ -165,7 +246,6 @@ if st.session_state.report_generated:
 
         st.divider()
 
-        # Climate Averages
         st.subheader("Regional Climate Averages")
 
         if state == "TX":
@@ -191,12 +271,11 @@ if st.session_state.report_generated:
 
         st.divider()
 
-        # Drought Link
         st.subheader("Drought Conditions")
         st.write("Check the latest drought status for your area:")
         st.markdown("[View Live U.S. Drought Monitor Map](https://droughtmonitor.unl.edu/CurrentConditions.aspx)")
 
-    # ==================== COST OF LIVING ====================
+    # Cost of Living
     st.subheader("📈 Cost of Living (Monthly Estimates)")
 
     gas_price = get_eia_gas_price(state)
@@ -230,105 +309,7 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # Cultural & Lifestyle Factors
-    st.subheader("🏡 Cultural & Lifestyle Factors")
-    st.caption(f"Specific data for **{county_or_city}** is limited - here is relevant regional context.")
-
-    with st.expander("🍽️ Food Access & Local Flavor"):
-        st.write("Food access varies by proximity to the nearest county seat. Most rural areas have at least a Dollar General or small grocer. Larger selections (Walmart, Brookshire's, etc.) are found in nearby towns. Local butchers and meat processors are popular with homesteaders. Southern comfort foods, BBQ, and Tex-Mex influences are common. Seasonal farmers markets and roadside stands appear in spring through fall.")
-
-    with st.expander("🎉 Festivals, Entertainment & Community"):
-        st.write("County fairs, rodeos, and church or homecoming events form the heart of social life. These events are a big part of local culture and community connection.")
-
-        st.markdown("**Notable regional events & resources:**")
-        if state == "TX":
-            st.markdown("- [Texas State Fair](https://bigtex.com/) - Major annual event in Dallas")
-            st.markdown("- [Texas Tourism Events](https://www.traveltexas.com/) - Search for festivals and events by region")
-        elif state == "OK":
-            st.markdown("- [Four States Fair & Rodeo](https://www.fourstatesfair.com/)")
-            st.markdown("- [Oklahoma Tourism](https://www.travelok.com/)")
-        elif state == "AR":
-            st.markdown("- [Arkansas Tourism](https://www.arkansas.com/)")
-            st.markdown("- [Arkansas State Fair](https://arkansasstatefair.com/)")
-        elif state == "LA":
-            st.markdown("- [Louisiana Travel](https://www.louisianatravel.com/)")
-
-        st.caption("Tip: Search your specific county + 'county fair' or 'festivals' to find current local events.")
-
-    with st.expander("🎓 Education"):
-        st.write("Public K-12 is provided by local school districts. Offerings and performance vary widely. Many families supplement with homeschooling or small private academies. Nearby community colleges and regional universities provide higher-education options.")
-
-        st.markdown("**Find local school district information:**")
-        if state == "TX":
-            st.markdown("- [Texas Education Agency (TEA)](https://tea.texas.gov/)")
-        elif state == "OK":
-            st.markdown("- [Oklahoma State Department of Education](https://sde.ok.gov/)")
-        elif state == "AR":
-            st.markdown("- [Arkansas Division of Elementary and Secondary Education](https://dese.ade.arkansas.gov/)")
-        elif state == "LA":
-            st.markdown("- [Louisiana Department of Education](https://www.louisianabelieves.com/)")
-
-    with st.expander("🏥 Healthcare"):
-        st.write("Access to healthcare varies significantly between rural and more populated areas.")
-
-        st.markdown("**Healthcare resources by state:**")
-        if state == "TX":
-            st.markdown("- [Texas Health and Human Services](https://www.hhs.texas.gov/)")
-            st.markdown("- [Texas Hospital Association](https://www.tha.org/)")
-        elif state == "OK":
-            st.markdown("- [Oklahoma State Department of Health](https://oklahoma.gov/health.html)")
-        elif state == "AR":
-            st.markdown("- [Arkansas Department of Health](https://www.healthy.arkansas.gov/)")
-        elif state == "LA":
-            st.markdown("- [Louisiana Department of Health](https://ldh.la.gov/)")
-
-    with st.expander("📡 Internet & Connectivity"):
-        st.write("High-speed internet is often limited in rural areas. Many residents use fixed wireless or satellite (like Starlink).")
-
-        st.markdown("**Helpful resources:**")
-        if state == "TX":
-            st.markdown("- [Texas Broadband Map](https://texasbroadband.texas.gov/)")
-        elif state == "OK":
-            st.markdown("- [Oklahoma Broadband](https://oklahoma.gov/omes.html)")
-        st.markdown("- [FCC Broadband Map](https://broadbandmap.fcc.gov/)")
-
-    with st.expander("🚨 Emergency Services"):
-        st.write("Emergency response times can be longer in rural areas (often 15-40+ minutes).")
-
-        st.markdown("**State resources:**")
-        if state == "TX":
-            st.markdown("- [Texas Emergency Management](https://tdem.texas.gov/)")
-        elif state == "OK":
-            st.markdown("- [Oklahoma Emergency Management](https://oklahoma.gov/oem.html)")
-        elif state == "AR":
-            st.markdown("- [Arkansas Department of Emergency Management](https://www.adem.arkansas.gov/)")
-        elif state == "LA":
-            st.markdown("- [Louisiana Governor's Office of Homeland Security](https://gohsep.la.gov/)")
-
-    with st.expander("🛒 Local Stores & Shopping"):
-        st.write("Most rural areas have at least a Dollar General or small local store. Larger selections are usually found in or near county seats.")
-
-        st.markdown("**Helpful resources:**")
-        st.markdown("- Search Google for your county + 'Chamber of Commerce' for local business listings.")
-        st.markdown("**Common chains:** Walmart, Brookshire's, Tractor Supply, Atwoods.")
-
-        if state == "TX":
-            st.markdown("- [Texas Chamber of Commerce Directory](https://www.texasstatechamber.org/)")
-        elif state == "OK":
-            st.markdown("- [Oklahoma Chamber of Commerce](https://www.okstatechamber.com/)")
-        elif state == "AR":
-            st.markdown("- [Arkansas Chamber of Commerce](https://www.arkansaschamber.com/)")
-        elif state == "LA":
-            st.markdown("- [Louisiana Chamber of Commerce](https://www.louisianachamber.org/)")
-
-    with st.expander("🛡️ Safety & Rural Context"):
-        st.write("Violent crime rates in rural areas are typically well below the U.S. average. Most people describe these communities as safe and neighborly.")
-
-    st.caption("Note: Specific local options can vary. Always verify current information locally.")
-
-    st.divider()
-
-    # === REGIONAL INSIGHTS ===
+    # Regional Insights
     st.subheader("📍 Regional Insights & Things to Consider")
 
     insights = [
@@ -347,7 +328,7 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # === CHECKLIST ===
+    # Checklist
     checklist = [
         "Order a current survey and review all easements and encroachments.",
         "Check the property against current FEMA flood maps.",
@@ -372,7 +353,7 @@ if st.session_state.report_generated:
 
     st.divider()
 
-    # === PDF EXPORT ===
+    # PDF Export
     if st.button("Download Report as PDF", use_container_width=True):
         pdf = FPDF()
         pdf.add_page()
@@ -437,7 +418,6 @@ if st.session_state.report_generated:
 
         pdf.ln(5)
 
-        # Checklist on Page 2
         pdf.add_page()
         pdf.set_font("Arial", "B", 16)
         pdf.cell(0, 12, "Important Considerations Checklist", ln=True, align="C")
@@ -449,22 +429,7 @@ if st.session_state.report_generated:
         pdf.cell(180, 8, "Item", border=1, align="L", fill=True)
         pdf.ln()
 
-        checklist_items = [
-            "Order a current survey and review all easements and encroachments.",
-            "Check the property against current FEMA flood maps.",
-            "Perform a thorough title search (especially for mineral rights).",
-            "Ask about agricultural, timber, or wildlife valuation programs in your state.",
-            "Get written estimates for utilities, well drilling, and septic if not on site.",
-            "Test or research water availability and understand local water rights.",
-            "Evaluate internet and cell coverage on the property.",
-            "Review county zoning, subdivision regulations, and building permits.",
-            "Arrange a perc test if installing a septic system.",
-            "Walk the boundaries and talk to neighbors.",
-            "Budget for fencing, gravel drive, and outbuildings.",
-            "Get insurance quotes early.",
-            "Visit the county extension office for soil maps and local growing advice.",
-            "In Texas, confirm school district tax rates and any special district taxes.",
-        ]
+        checklist_items = checklist
 
         pdf.set_font("Arial", size=9)
         for i, item in enumerate(checklist_items, 1):

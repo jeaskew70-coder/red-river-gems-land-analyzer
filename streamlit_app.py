@@ -35,7 +35,6 @@ def get_current_weather(city, state_code):
     if not city:
         return None
     
-    # Include state for better accuracy (e.g. "Canton,TX,US")
     query = f"{city},{state_code},US"
     url = f"http://api.openweathermap.org/data/2.5/weather?q={query}&appid={OPENWEATHER_API_KEY}&units=imperial"
     
@@ -162,7 +161,7 @@ if st.session_state.report_generated:
                 st.write(f"**Conditions:** {weather['description']}")
                 st.write(f"**Location:** {weather['city']}")
         else:
-            st.info("Enter a city name above (example: Canton or Paris) to see current weather conditions.")
+            st.info("Enter a city name above to see current weather conditions.")
 
         st.divider()
 

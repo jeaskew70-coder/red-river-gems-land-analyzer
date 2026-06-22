@@ -242,6 +242,45 @@ if st.session_state.report_generated:
 
     st.divider()
 
+    # ==================== NEW: COMMON PITFALLS SECTION ====================
+    with st.expander("⚠️ Common Pitfalls When Buying Land Here"):
+        st.write("Here are some of the most common issues and complaints from people buying land in these states:")
+
+        if state == "TX":
+            st.markdown("**Texas:**")
+            st.markdown("- **Mineral Rights**: Very common for minerals to be severed from the surface. Always get a full title search.")
+            st.markdown("- **Property Taxes**: Agricultural valuation can save you a lot — but you must qualify and maintain the use.")
+            st.markdown("- **Surveys & Encroachments**: Old fences and boundary disputes are extremely common. Get a new survey.")
+            st.markdown("- **Utilities**: “Available at the road” often means expensive to connect (especially electric and water).")
+            st.markdown("- **Feral Hogs**: Very destructive. Good fencing is essential and often expensive.")
+
+        elif state == "OK":
+            st.markdown("**Oklahoma:**")
+            st.markdown("- **Mineral Rights + Wind/Solar Leases**: Many properties have existing or potential energy leases that can affect use and value.")
+            st.markdown("- **Water Rights**: Can be more complex than people expect, especially with wells.")
+            st.markdown("- **Survey Issues**: Boundary disputes and old surveys causing problems at closing.")
+            st.markdown("- **Property Tax Valuation**: Agricultural use valuation exists but has specific requirements.")
+
+        elif state == "AR":
+            st.markdown("**Arkansas:**")
+            st.markdown("- **Drainage & Flooding**: Many areas have drainage issues, especially in flatter parts of the state.")
+            st.markdown("- **Access Easements**: Problems with shared driveways or legal access to the property are common.")
+            st.markdown("- **Mineral & Timber Rights**: Confusion between surface rights and subsurface/timber rights.")
+            st.markdown("- **Surveys**: Older surveys and unclear boundaries frequently cause issues.")
+
+        elif state == "LA":
+            st.markdown("**Louisiana:**")
+            st.markdown("- **Drainage Districts & Levee Taxes**: These can add significant extra costs on top of regular property taxes.")
+            st.markdown("- **Flood Insurance**: Required in many areas and can be expensive. Always check current flood maps.")
+            st.markdown("- **Mineral Rights**: Still very relevant in many parishes.")
+            st.markdown("- **Legal System**: Louisiana uses a different legal system (based on French civil law), which can surprise buyers from other states.")
+
+        st.write("**General Advice Across All 4 States:**")
+        st.markdown("- Always get a **current survey** (don’t rely on old ones).")
+        st.markdown("- Do a full **title search** — especially for mineral rights.")
+        st.markdown("- Talk to neighbors and the local county extension office before buying.")
+        st.markdown("- Budget for fencing, gravel, and utilities — they often cost more than expected.")
+
     # Weather Expander
     with st.expander("🌤️ Weather, Climate & Environmental Conditions"):
         st.write(f"**Current conditions near {county_or_city or 'the selected area'}**")
@@ -479,5 +518,5 @@ st.caption("""
 Red River Gems and the Red River Gems Land Analyzer are trademarks of their owner.
 
 Follow for more land & homesteading content:  
-[ TikTok](https://www.tiktok.com/@YOUR_TIKTOK) • [Instagram](https://www.instagram.com/YOUR_INSTAGRAM)
+[ TikTok](https://www.tiktok.com/@redrivergems) • [Instagram](https://www.instagram.com/redrivergems)
 """)
